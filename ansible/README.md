@@ -1,0 +1,7 @@
+## Templates
+
+## Inventories
+
+## Playbooks
+
+## Snapshots
