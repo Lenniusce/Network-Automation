@@ -1,0 +1,15 @@
+---
+
+- name: Take out Trash
+  file:
+    path: '$PWD/../../configs/{{ inventory_hostname }}.cfg'
+    state: absent
+  delegate_to: localhost
+
+
+- name: Create New Configs
+  ansible.builtin.template:
+    src: '{{ ansible_network_os }}.j2'
+    dest: '$PWD/../../configs/{{ inventory_hostname }}.cfg'
+    lstrip_block:  yes
+  delegate_to: localhost
