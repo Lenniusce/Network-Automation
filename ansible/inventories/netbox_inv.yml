@@ -1,6 +1,10 @@
+# netbox_inv.yml
 
-plugin: netbox.netbox.nb_inventory
-validate_certs: False
-group_by:
- - device_roles
- - sites
+ plugin: netbox.netbox.nb_inventory
+ api_endpoint: http://192.168.161.128:8000
+ # This is a locally installed VM, I dont care if the token is out in the wild.
+ token: XRrqxGPnbQ7qZjv9KpDv0fPmZk6xMUtnPSjOOJbJ
+ validate_certs: false
+ group_by:
+  - device_roles
+  - sites
