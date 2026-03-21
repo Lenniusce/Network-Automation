@@ -24,3 +24,7 @@ Run these to see if inventory shows:
 ansible-inventory -i netbox_inv.yml --graph
 
 ansible-inventory -i netbox_inv.yml --list
+
+Run the generate-configs from ansible folder
+
+ansible-playbook -i inventories/netbox_inv.yml ~/Network-Automation/ansible/playbooks/write-configs/generate-configs.yml
