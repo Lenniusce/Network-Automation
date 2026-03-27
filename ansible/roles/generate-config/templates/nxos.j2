@@ -1,5 +1,6 @@
 {# this is the main config for all NXOS devices #}
 !
+{# hostname using a special variable https://docs.ansible.com/projects/ansible/latest/reference_appendices/special_variables.html #}
 hostname {{ inventory_hostname_short }}
 !
 policy-map type network-qos jumboframes
