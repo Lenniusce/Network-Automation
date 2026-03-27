@@ -5,6 +5,7 @@
  # This is a locally installed VM, I dont care if the token is out in the wild.
  token: XRrqxGPnbQ7qZjv9KpDv0fPmZk6xMUtnPSjOOJbJ
  validate_certs: false
+ interfaces: true
  group_by:
   - device_roles
   - sites

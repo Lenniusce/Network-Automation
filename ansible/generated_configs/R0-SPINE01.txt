@@ -10,6 +10,7 @@ limit-resource vrf minimum 2 maximum 4096
 limit-resource port-channel minimum 0 maximum 511
 limit-resource m4route-mem minimum 58 maximum 58
 limit-resource m6route-mem minimum 8 maximum 8
+
 banner motd @
 
 ***************************************************
@@ -28,7 +29,9 @@ banner exec @
 *                                                 *
 *   Packets are coming.                           *
 ***************************************************
-@feature scp-server
+@
+!
+feature scp-server
 feature ngmvpn
 nv overlay evpn
 feature ospf
@@ -40,7 +43,49 @@ feature vn-segment-vlan-based
 feature nv overlay
 feature vpc
 feature lacp
-feature bfdno password strength-check
+feature bfd
+!
+interface Ethernet1/1
+  description R1-TOR01
+  mtu 9216
+interface Ethernet1/2
+  description R1-TOR02
+  mtu 
+interface Ethernet1/3
+  description R2-TOR01
+  mtu 
+interface Ethernet1/4
+  description R2-TOR02
+  mtu 
+interface Ethernet1/5
+  description R3-TOR01
+  mtu 
+interface Ethernet1/6
+  description R3-TOR02
+  mtu 
+interface Ethernet1/7
+  description Shutdown: Unused
+  mtu 
+interface Ethernet1/8
+  description Shutdown: Unused
+  mtu 
+interface Ethernet1/9
+  description Shutdown: Unused
+  mtu 
+interface Ethernet1/10
+  description Shutdown: Unused
+  mtu 
+interface Loopback0
+  description ** RID/BGP Overlay **
+  mtu 
+interface Loopback1
+  description ** Anycast-RP address **
+  mtu 
+interface mgmt0
+  description Management
+  mtu 
+
+no password strength-check
 ip domain-lookup
 system qos
   service-policy type network-qos jumboframes

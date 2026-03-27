@@ -12,8 +12,13 @@ limit-resource vrf minimum 2 maximum 4096
 limit-resource port-channel minimum 0 maximum 511
 limit-resource m4route-mem minimum 58 maximum 58
 limit-resource m6route-mem minimum 8 maximum 8
+
 {% include './nxos/banner.j2' %}
+
 {% include './nxos/features.j2' %}
+
+{% include './nxos/interfaces.j2' %}
+
 no password strength-check
 ip domain-lookup
 system qos
