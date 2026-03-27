@@ -2,7 +2,7 @@
 
 - name: Take out Trash
   file:
-    path: '$PWD/../../generated_configs/{{ inventory_hostname }}.cfg'
+    path: '$PWD/../../generated_configs/{{ inventory_hostname }}.txt'
     state: absent
   delegate_to: localhost
 
@@ -10,6 +10,6 @@
 - name: Create New Configs
   ansible.builtin.template:
     src: 'nxos.j2'
-    dest: '$PWD/../../generated_configs/{{ inventory_hostname }}.cfg'
+    dest: '$PWD/../../generated_configs/{{ inventory_hostname }}.txt'
     lstrip_blocks:  yes
   delegate_to: localhost
