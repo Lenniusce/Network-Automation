@@ -48,42 +48,55 @@ feature bfd
 interface Ethernet1/1
   description 
   mtu 
+  ip pim sparse-mode
 interface Ethernet1/2
   description 
   mtu 
+  ip pim sparse-mode
 interface Ethernet1/3
   description 
   mtu 
+  ip pim sparse-mode
 interface Ethernet1/4
   description 
   mtu 
+  ip pim sparse-mode
 interface Ethernet1/5
   description 
   mtu 
+  ip pim sparse-mode
 interface Ethernet1/6
   description 
   mtu 
+  ip pim sparse-mode
 interface Ethernet1/7
   description 
   mtu 
+  ip pim sparse-mode
 interface Ethernet1/8
   description 
   mtu 
+  ip pim sparse-mode
 interface Ethernet1/9
   description 
   mtu 
+  ip pim sparse-mode
 interface Ethernet1/10
   description 
   mtu 
+  ip pim sparse-mode
 interface Loopback0
   description 
   mtu 
+  ip pim sparse-mode
 interface Loopback1
   description 
   mtu 
+  ip pim sparse-mode
 interface mgmt0
   description 
   mtu 
+  ip pim sparse-mode
 
 no password strength-check
 ip domain-lookup
@@ -94,6 +107,8 @@ system qos
 !
 !
 !
+
+router bgp 65001
 !
 !
 end
