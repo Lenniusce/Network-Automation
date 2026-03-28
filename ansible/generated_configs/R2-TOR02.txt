@@ -11,6 +11,7 @@ limit-resource port-channel minimum 0 maximum 511
 limit-resource m4route-mem minimum 58 maximum 58
 limit-resource m6route-mem minimum 8 maximum 8
 
+username admin password 0 admin role network-admin
 banner motd @
 
 ***************************************************
@@ -31,6 +32,8 @@ banner exec @
 ***************************************************
 @
 !
+nv overlay evpn
+
 feature scp-server
 feature ngmvpn
 nv overlay evpn
@@ -45,6 +48,14 @@ feature vpc
 feature lacp
 feature bfd
 !
+no password strength-check
+ip domain-lookup
+system qos
+  service-policy type network-qos jumboframes
+
+ip pim rp-address 10.255.0.123 group-list 239.0.0.0/8
+ip pim ssm range 232.0.0.0/8
+
 interface Ethernet1/1
   description 
   mtu 
@@ -140,7 +151,18 @@ system qos
 !
 !
 
+router ospf UNDERLAY-NET
+router-id 10.255.1.12
+log-adjacency-changes
 router bgp 65001
+log-neighbor-changes
+template peer VXLAN_SPINE
+remote-as 65001
+update-source loopback0
+address-family ipv4 unicast
+address-family l2vpn evpn
+send-community
+send-community extended
 !
 !
 end

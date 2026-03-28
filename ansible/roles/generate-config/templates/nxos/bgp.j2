@@ -1,2 +1,15 @@
-{# Maybe there is a way to simplify this #}
+{# Maybe there is a way to simplify this variable, figure out later #}
 router bgp {{ hostvars[inventory_hostname].local_context_data[0].bgp.asn }}
+log-neighbor-changes
+{% if "spine" in device_roles %}
+    {% set template_peer = "VXLAN_LEAF" %}
+{% elif "tor" in device_roles %}
+    {% set template_peer = "VXLAN_SPINE" %}
+{% endif %}
+template peer {{ template_peer }}
+remote-as {{ hostvars[inventory_hostname].local_context_data[0].bgp.remote_asn }}
+update-source loopback0
+address-family ipv4 unicast
+address-family l2vpn evpn
+send-community
+send-community extended

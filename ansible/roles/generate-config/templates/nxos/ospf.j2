@@ -1,0 +1,5 @@
+router ospf UNDERLAY-NET
+{% if hostvars[inventory_hostname].local_context_data[0].ospf.router_id is defined and hostvars[inventory_hostname].local_context_data[0].ospf.router_id %}
+router-id {{ hostvars[inventory_hostname].local_context_data[0].ospf.router_id }}
+{% endif %}
+log-adjacency-changes
