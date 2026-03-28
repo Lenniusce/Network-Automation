@@ -7,6 +7,8 @@ policy-map type network-qos jumboframes
   class type network-qos class-default
     mtu 9216
 !
+{% include './nxos/vdc.j2' %}{{ '\n' }}
+!
 limit-resource vlan minimum 16 maximum 4094
 limit-resource vrf minimum 2 maximum 4096
 limit-resource port-channel minimum 0 maximum 511
@@ -28,6 +30,8 @@ system qos
 
 ip pim rp-address 10.255.0.123 group-list 239.0.0.0/8
 ip pim ssm range 232.0.0.0/8
+ip pim anycast-rp 10.255.0.123 10.255.0.1
+ip pim anycast-rp 10.255.0.123 10.255.0.2
 
 {% include './nxos/interfaces.j2' %}
 

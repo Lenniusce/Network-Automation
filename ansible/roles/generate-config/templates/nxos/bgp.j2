@@ -13,3 +13,6 @@ address-family ipv4 unicast
 address-family l2vpn evpn
 send-community
 send-community extended
+{% if "spine" in device_roles %}
+route-reflector-client
+{% endif %}
