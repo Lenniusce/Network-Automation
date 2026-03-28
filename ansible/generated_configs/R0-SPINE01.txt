@@ -56,58 +56,70 @@ system qos
 ip pim rp-address 10.255.0.123 group-list 239.0.0.0/8
 ip pim ssm range 232.0.0.0/8
 
+!
 interface Ethernet1/1
-  description R1-TOR01
+description R1-TOR01
   mtu 9216
-  ip pim sparse-mode
+ip pim sparse-mode
+!
 interface Ethernet1/2
-  description R1-TOR02
-  mtu 
-  ip pim sparse-mode
+description R1-TOR02
+  mtu 9216
+ip pim sparse-mode
+!
 interface Ethernet1/3
-  description R2-TOR01
-  mtu 
-  ip pim sparse-mode
+description R2-TOR01
+  mtu 9216
+ip pim sparse-mode
+!
 interface Ethernet1/4
-  description R2-TOR02
-  mtu 
-  ip pim sparse-mode
+description R2-TOR02
+  mtu 9216
+ip pim sparse-mode
+!
 interface Ethernet1/5
-  description R3-TOR01
-  mtu 
-  ip pim sparse-mode
+description R3-TOR01
+  mtu 9216
+ip pim sparse-mode
+!
 interface Ethernet1/6
-  description R3-TOR02
-  mtu 
-  ip pim sparse-mode
+description R3-TOR02
+  mtu 9216
+ip pim sparse-mode
+!
 interface Ethernet1/7
-  description Shutdown: Unused
-  mtu 
-  ip pim sparse-mode
+description Shutdown: Unused
+ip pim sparse-mode
+!
 interface Ethernet1/8
-  description Shutdown: Unused
-  mtu 
-  ip pim sparse-mode
+description Shutdown: Unused
+ip pim sparse-mode
+!
 interface Ethernet1/9
-  description Shutdown: Unused
-  mtu 
-  ip pim sparse-mode
+description Shutdown: Unused
+ip pim sparse-mode
+!
 interface Ethernet1/10
-  description Shutdown: Unused
-  mtu 
-  ip pim sparse-mode
+description Shutdown: Unused
+ip pim sparse-mode
+!
 interface Loopback0
-  description ** RID/BGP Overlay **
-  mtu 
-  ip pim sparse-mode
+description ** RID/BGP Overlay **
+ip pim sparse-mode
+ip unnumbered loopback0
+ip ospf network point-to-point
+ip router ospf UNDERLAY-NET area 0.0.0.0
+!!
 interface Loopback1
-  description ** Anycast-RP address **
-  mtu 
-  ip pim sparse-mode
+description ** Anycast-RP address **
+ip pim sparse-mode
+ip unnumbered loopback0
+ip ospf network point-to-point
+ip router ospf UNDERLAY-NET area 0.0.0.0
+!!
 interface mgmt0
-  description Management
-  mtu 
-  ip pim sparse-mode
+description Management
+ip pim sparse-mode
 
 no password strength-check
 ip domain-lookup

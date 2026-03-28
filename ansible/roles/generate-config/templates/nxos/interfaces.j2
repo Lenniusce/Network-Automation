@@ -1,6 +1,12 @@
 {% for intf in interfaces %}
+!
 interface {{ intf.name }}
-  description {{ intf.description }}
+description {{ intf.description }}
+{% if intf.mtu is defined and intf.mtu %}
   mtu {{ intf.mtu }}
-  ip pim sparse-mode
+{% endif %}
+ip pim sparse-mode
+{% if "ip_ospf_unnumbered" in intf.tags %}
+{% include "./nxos/ip_unnumbered.j2" %}
+{% endif %}
 {% endfor %}
