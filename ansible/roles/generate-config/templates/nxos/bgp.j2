@@ -1,5 +1,6 @@
 {# Maybe there is a way to simplify this variable, figure out later #}
 router bgp {{ hostvars[inventory_hostname].local_context_data[0].bgp.asn }}
+router-id {{ hostvars[inventory_hostname].local_context_data[0].ospf.router_id }}
 log-neighbor-changes
 {% if "spine" in device_roles %}
     {% set template_peer = "VXLAN_LEAF" %}

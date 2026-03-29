@@ -1,6 +1,10 @@
 !
 hostname R0-SPINE01
 !
+
+
+
+!
 policy-map type network-qos jumboframes
   class type network-qos class-default
     mtu 9216
@@ -15,31 +19,11 @@ limit-resource m4route-mem minimum 58 maximum 58
 limit-resource m6route-mem minimum 8 maximum 8
 
 username admin password 0 admin role network-admin
-banner motd @
 
-***************************************************
-*      A LANNISTER ALWAYS PAYS HIS PACKETS        *
-*                                                 *
-*   Warning: Unauthorized access will be          *
-*   processed, then eliminated.                   *
-***************************************************
-@
-
-banner exec @
-
-***************************************************
-*                WINTER IS COMING                 *
-*   (And your packets are arriving just as slow)  *
-*                                                 *
-*   Packets are coming.                           *
-***************************************************
-@
-!
 nv overlay evpn
 
 feature scp-server
 feature ngmvpn
-nv overlay evpn
 feature ospf
 feature bgp
 feature pim
@@ -51,6 +35,7 @@ feature vpc
 feature lacp
 feature bfd
 !
+cli alias name wr copy run start
 no password strength-check
 ip domain-lookup
 system qos
@@ -61,10 +46,31 @@ ip pim ssm range 232.0.0.0/8
 ip pim anycast-rp 10.255.0.123 10.255.0.1
 ip pim anycast-rp 10.255.0.123 10.255.0.2
 
+
+vrf context management
+
+
+
+interface nve1
+  no shutdown
+  description VTEP NVE
+  host-reachability protocol bgp
+  source-interface loopback1
+  member vni 10060
+    suppress-arp
+    mcast-group 239.1.1.100
+  member vni 10100
+    mcast-group 239.1.1.100
+  member vni 10555 associate-vrf
+    mcast-group 239.10.1.1
+
+
+
+ 
+
 interface Ethernet1/1
 description R1-TOR01
-no switchport
-  mtu 9216
+mtu 9216
 medium p2p
 ip unnumbered loopback0
 ip ospf network point-to-point
@@ -74,8 +80,7 @@ ip pim sparse-mode
 no shutdown
 interface Ethernet1/2
 description R1-TOR02
-no switchport
-  mtu 9216
+mtu 9216
 medium p2p
 ip unnumbered loopback0
 ip ospf network point-to-point
@@ -85,8 +90,7 @@ ip pim sparse-mode
 no shutdown
 interface Ethernet1/3
 description R2-TOR01
-no switchport
-  mtu 9216
+mtu 9216
 medium p2p
 ip unnumbered loopback0
 ip ospf network point-to-point
@@ -96,8 +100,7 @@ ip pim sparse-mode
 no shutdown
 interface Ethernet1/4
 description R2-TOR02
-no switchport
-  mtu 9216
+mtu 9216
 medium p2p
 ip unnumbered loopback0
 ip ospf network point-to-point
@@ -107,8 +110,7 @@ ip pim sparse-mode
 no shutdown
 interface Ethernet1/5
 description R3-TOR01
-no switchport
-  mtu 9216
+mtu 9216
 medium p2p
 ip unnumbered loopback0
 ip ospf network point-to-point
@@ -118,8 +120,7 @@ ip pim sparse-mode
 no shutdown
 interface Ethernet1/6
 description R3-TOR02
-no switchport
-  mtu 9216
+mtu 9216
 medium p2p
 ip unnumbered loopback0
 ip ospf network point-to-point
@@ -129,44 +130,35 @@ ip pim sparse-mode
 no shutdown
 interface Ethernet1/7
 description Shutdown: Unused
-no switchport
 no shutdown
 interface Ethernet1/8
 description Shutdown: Unused
-no switchport
 no shutdown
 interface Ethernet1/9
-description Shutdown: Unused
-no switchport
+description vPC Peer-Link
 no shutdown
 interface Ethernet1/10
-description Shutdown: Unused
-no switchport
+description vPC Peer-Link
 no shutdown
-interface Loopback0
-description ** RID/BGP Overlay **
-no switchport
-medium p2p
-ip unnumbered loopback0
-ip ospf network point-to-point
-ip router ospf UNDERLAY-NET area 0.0.0.0 
 
-ip pim sparse-mode
-no shutdown
-interface Loopback1
-description ** Anycast-RP address **
-no switchport
-medium p2p
-ip unnumbered loopback0
-ip ospf network point-to-point
-ip router ospf UNDERLAY-NET area 0.0.0.0 
+ 
 
-ip pim sparse-mode
-no shutdown
 interface mgmt0
-description Management
-no switchport
-no shutdown
+vrf member management
+ip address 172.30.0.1/24
+
+ 
+
+interface loopback0
+description RID/BGP Overlay
+ip address 10.255.0.1/32
+ip router ospf UNDERLAY-NET area 0.0.0.0
+ip pim sparse-mode
+interface loopback1
+description VTEP/Overlay
+ip address 10.255.0.123/32
+ip router ospf UNDERLAY-NET area 0.0.0.0
+ip pim sparse-mode
 
 no password strength-check
 ip domain-lookup
@@ -182,6 +174,7 @@ router ospf UNDERLAY-NET
 router-id 10.255.0.1
 log-adjacency-changes
 router bgp 65001
+router-id 10.255.0.1
 log-neighbor-changes
 template peer VXLAN_LEAF
 remote-as 65001
@@ -192,6 +185,10 @@ send-community
 send-community extended
 route-reflector-client
 
-!
+evpn
+  vni 10100 l2
+    rd auto
+    route-target import auto
+    route-target export auto
 !
 end

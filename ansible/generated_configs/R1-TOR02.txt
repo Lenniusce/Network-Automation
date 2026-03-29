@@ -1,6 +1,14 @@
 !
 hostname R1-TOR02
 !
+
+hardware access-list tcam region racl 512
+hardware access-list tcam region rp-ipv6-qos 0
+hardware access-list tcam region arp-ether 256 double-wide
+
+
+
+!
 policy-map type network-qos jumboframes
   class type network-qos class-default
     mtu 9216
@@ -15,31 +23,11 @@ limit-resource m4route-mem minimum 58 maximum 58
 limit-resource m6route-mem minimum 8 maximum 8
 
 username admin password 0 admin role network-admin
-banner motd @
 
-***************************************************
-*      A LANNISTER ALWAYS PAYS HIS PACKETS        *
-*                                                 *
-*   Warning: Unauthorized access will be          *
-*   processed, then eliminated.                   *
-***************************************************
-@
-
-banner exec @
-
-***************************************************
-*                WINTER IS COMING                 *
-*   (And your packets are arriving just as slow)  *
-*                                                 *
-*   Packets are coming.                           *
-***************************************************
-@
-!
 nv overlay evpn
 
 feature scp-server
 feature ngmvpn
-nv overlay evpn
 feature ospf
 feature bgp
 feature pim
@@ -51,6 +39,7 @@ feature vpc
 feature lacp
 feature bfd
 !
+cli alias name wr copy run start
 no password strength-check
 ip domain-lookup
 system qos
@@ -61,96 +50,141 @@ ip pim ssm range 232.0.0.0/8
 ip pim anycast-rp 10.255.0.123 10.255.0.1
 ip pim anycast-rp 10.255.0.123 10.255.0.2
 
+vlan 1,100,555
+vlan 60
+  name ops
+  vn-segment 10060
+vlan 100
+  name Public_VLAN
+  vn-segment 10100
+vlan 444
+  name BACKUP_VLAN_ROUTING_VPC
+vlan 555
+  name L3VNI-For-IRB
+  vn-segment 10555
+
+
+vrf context management
+
+interface vlan60
+description Anycast Gateway For Admin Workstations
+no shutdown
+mtu 9216
+vrf member VXLANS
+no ip redirects
+ip address 192.168.60.254/24
+no ipv6 redirects
+fabric forwarding mode anycast-gateway
+interface vlan100
+description Anycast Gateway For Public
+no shutdown
+mtu 9216
+vrf member VXLANS
+no ip redirects
+ip address 69.25.124.1/24
+no ipv6 redirects
+fabric forwarding mode anycast-gateway
+interface vlan444
+description ** Underlay Backup over vPC Peer-Link **
+no shutdown
+mtu 9216
+vrf member VXLANS
+no ip redirects
+ip address 192.168.0.2/30
+no ipv6 redirects
+fabric forwarding mode anycast-gateway
+interface vlan555
+description L3VNI-For-IRB
+no shutdown
+mtu 9216
+vrf member VXLANS
+no ip redirects
+no ipv6 redirects
+fabric forwarding mode anycast-gateway
+
+
+interface nve1
+  no shutdown
+  description VTEP NVE
+  host-reachability protocol bgp
+  source-interface loopback1
+  member vni 10060
+    suppress-arp
+    mcast-group 239.1.1.100
+  member vni 10100
+    mcast-group 239.1.1.100
+  member vni 10555 associate-vrf
+    mcast-group 239.10.1.1
+
+
+interface port-channel3
+no shutdown
+interface port-channel999
+no shutdown
+
+ 
+
 interface Ethernet1/1
 description 
-no switchport
-  mtu 9216
+mtu 9216
 no shutdown
 interface Ethernet1/2
 description 
-no switchport
-  mtu 9216
+mtu 9216
 no shutdown
 interface Ethernet1/3
 description 
-no switchport
-  mtu 9216
+mtu 9216
 no shutdown
 interface Ethernet1/4
 description 
-no switchport
-  mtu 9216
+mtu 9216
 no shutdown
 interface Ethernet1/5
 description 
-no switchport
-  mtu 9216
+mtu 9216
 no shutdown
 interface Ethernet1/6
 description 
-no switchport
-  mtu 9216
+mtu 9216
 no shutdown
 interface Ethernet1/7
 description 
-no switchport
 no shutdown
 interface Ethernet1/8
 description 
-no switchport
 no shutdown
 interface Ethernet1/9
-description 
-no switchport
+description vPC Peer-Link
 no shutdown
 interface Ethernet1/10
-description 
-no switchport
+description vPC Peer-Link
 no shutdown
-interface loopback0
-description 
-no switchport
-no shutdown
-interface loopback1
-description 
-no switchport
-no shutdown
-interface loopback69
-description 
-no switchport
-no shutdown
+
+ 
+
 interface mgmt0
-description 
-no switchport
-no shutdown
-interface nve1
-description 
-no switchport
-no shutdown
-interface port-channel3
-description 
-no switchport
-no shutdown
-interface port-channel999
-description 
-no switchport
-no shutdown
-interface vlan60
-description 
-no switchport
-no shutdown
-interface vlan100
-description 
-no switchport
-no shutdown
-interface vlan444
-description 
-no switchport
-no shutdown
-interface vlan555
-description 
-no switchport
-no shutdown
+vrf member management
+ip address 172.30.0.22/24
+
+ 
+
+interface loopback0
+description RID/BGP Overlay
+ip address 10.255.1.2/32
+ip router ospf UNDERLAY-NET area 0.0.0.0
+ip pim sparse-mode
+interface loopback1
+description VTEP/Overlay
+ip address 10.255.255.2/32
+ip router ospf UNDERLAY-NET area 0.0.0.0
+ip pim sparse-mode
+interface loopback69
+description VRF ROUTER-ID
+vrf member VXLANS
+ip address 10.69.69.254/32
+ip router ospf UNDERLAY-NET area 0.0.0.0
+ip pim sparse-mode
 
 no password strength-check
 ip domain-lookup
@@ -163,8 +197,10 @@ system qos
 !
 
 router ospf UNDERLAY-NET
+router-id 10.255.1.2
 log-adjacency-changes
 router bgp 65001
+router-id 10.255.1.2
 log-neighbor-changes
 template peer VXLAN_SPINE
 remote-as 65001
@@ -174,6 +210,10 @@ address-family l2vpn evpn
 send-community
 send-community extended
 
-!
+evpn
+  vni 10100 l2
+    rd auto
+    route-target import auto
+    route-target export auto
 !
 end

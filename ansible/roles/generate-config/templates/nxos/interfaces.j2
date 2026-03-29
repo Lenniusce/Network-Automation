@@ -1,13 +1,75 @@
-{% for intf in interfaces %}
+{# For VLAN interfaces #}
+
+{% for intf in interfaces if "vlan" in intf.name | lower %}
 interface {{ intf.name }}
 description {{ intf.description }}
-no switchport
+no shutdown
+mtu 9216
+vrf member VXLANS
+no ip redirects
+{% for ip in intf.ip_addresses %}
+ip address {{ ip.address }}
+{% endfor %}
+no ipv6 redirects
+fabric forwarding mode anycast-gateway
+{% endfor %}
+
+{# For NVE interface #}
+
+interface nve1
+  no shutdown
+  description VTEP NVE
+  host-reachability protocol bgp
+  source-interface loopback1
+  member vni 10060
+    suppress-arp
+    mcast-group 239.1.1.100
+  member vni 10100
+    mcast-group 239.1.1.100
+  member vni 10555 associate-vrf
+    mcast-group 239.10.1.1
+
+{# For VLAN interfaces #}
+
+{% for intf in interfaces if "port-channel" in intf.name | lower %}
+interface {{ intf.name }}
+no shutdown
+{% endfor %}
+
+{# For Ethernet interfaces #} 
+
+{% for intf in interfaces if "Ethernet" in intf.name %}
+interface {{ intf.name }}
+description {{ intf.description }}
 {% if intf.mtu is defined and intf.mtu %}
-  mtu {{ intf.mtu }}
+mtu {{ intf.mtu }}
 {% endif %}
 {% if "ip_ospf_unnumbered" in intf.tags %}
 {% include "./nxos/ip_unnumbered.j2" %} {{ '\n' }}
 ip pim sparse-mode
 {% endif %}
 no shutdown
+{% endfor %}
+
+{# For Mgmt #} 
+
+{% for intf in interfaces if "mgmt" in intf.name | lower %}
+interface {{ intf.name }}
+vrf member management
+ip address {{ intf.ip_addresses[0].address }}
+{% endfor %}
+
+{# For Loopbacks #} 
+
+{% for intf in interfaces if "loopback" in intf.name | lower %}
+interface {{ intf.name }}
+description {{ intf.description }}
+{% if "loopback69" in intf.name | lower %}
+vrf member VXLANS
+{% endif %}
+ip address {{ intf.ip_addresses[0].address }}
+{% if "loopback0" or "loopback1" in intf.name | lower %}
+ip router ospf UNDERLAY-NET area 0.0.0.0
+{% endif %}
+ip pim sparse-mode
 {% endfor %}

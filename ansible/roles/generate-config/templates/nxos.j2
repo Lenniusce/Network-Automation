@@ -3,6 +3,13 @@
 {# hostname using a special variable https://docs.ansible.com/projects/ansible/latest/reference_appendices/special_variables.html #}
 hostname {{ inventory_hostname_short }}
 !
+
+{% if "tor" in device_roles %}
+{% include './nxos/tcam.j2' %}{{ '\n' }}
+{% endif %}
+
+
+!
 policy-map type network-qos jumboframes
   class type network-qos class-default
     mtu 9216
@@ -17,12 +24,13 @@ limit-resource m6route-mem minimum 8 maximum 8
 
 {% include './nxos/usernames.j2' %}
 
-{% include './nxos/banner.j2' %}
+{# {% include './nxos/banner.j2' %} #}
 
 nv overlay evpn
 
 {% include './nxos/features.j2' %}
 
+cli alias name wr copy run start
 no password strength-check
 ip domain-lookup
 system qos
@@ -32,6 +40,12 @@ ip pim rp-address 10.255.0.123 group-list 239.0.0.0/8
 ip pim ssm range 232.0.0.0/8
 ip pim anycast-rp 10.255.0.123 10.255.0.1
 ip pim anycast-rp 10.255.0.123 10.255.0.2
+
+{% if "tor" in device_roles %}
+{% include './nxos/vlan.j2' %}{{ '\n' }}
+{% endif %}
+
+{% include './nxos/vrf.j2' %}
 
 {% include './nxos/interfaces.j2' %}
 
@@ -49,6 +63,7 @@ system qos
 
 {% include './nxos/bgp.j2' %}
 
-!
+{% include './nxos/evpn.j2' %}
+
 !
 end

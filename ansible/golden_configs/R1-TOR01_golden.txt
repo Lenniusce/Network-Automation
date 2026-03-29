@@ -86,7 +86,7 @@ interface Vlan60
   fabric forwarding mode anycast-gateway
 
 interface Vlan100
-  description  Anycast Gateway For Public  
+  description Anycast Gateway For Public  
   no shutdown
   mtu 9216
   vrf member ISP
