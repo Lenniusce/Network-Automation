@@ -68,7 +68,7 @@ description {{ intf.description }}
 vrf member VXLANS
 {% endif %}
 ip address {{ intf.ip_addresses[0].address }}
-{% if "loopback0" or "loopback1" in intf.name | lower %}
+{% if "loopback0" in intf.name | lower or "loopback1" in intf.name | lower %}
 ip router ospf UNDERLAY-NET area 0.0.0.0
 {% endif %}
 ip pim sparse-mode

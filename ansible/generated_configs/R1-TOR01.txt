@@ -183,7 +183,6 @@ interface loopback69
 description VRF ROUTER-ID
 vrf member VXLANS
 ip address 10.69.69.254/32
-ip router ospf UNDERLAY-NET area 0.0.0.0
 ip pim sparse-mode
 
 no password strength-check
