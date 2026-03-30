@@ -24,6 +24,10 @@ limit-resource m6route-mem minimum 8 maximum 8
 
 username admin password 0 admin role network-admin
 
+nv overlay evpn
+
+
+
 feature scp-server
 feature ngmvpn
 feature ospf
@@ -36,8 +40,6 @@ feature nv overlay
 feature vpc
 feature lacp
 feature bfd
-!
-nv overlay evpn
 
 cli alias name wr copy run start
 no password strength-check
@@ -96,6 +98,7 @@ interface Vlan60
 description Anycast Gateway For Admin Workstations
 no shutdown
 mtu 9216
+vrf member VXLANS
 no ip redirects
 ip address 192.168.60.254/24
 no ipv6 redirects
@@ -123,10 +126,10 @@ interface Vlan555
 description L3VNI-For-IRB
 no shutdown
 mtu 9216
+vrf member VXLANS
 no ip redirects
 no ipv6 redirects
 ip pim sparse-mode
-
 
 interface nve1
   no shutdown
@@ -140,7 +143,6 @@ interface nve1
     mcast-group 239.1.1.100
   member vni 10555 associate-vrf
     mcast-group 239.10.1.1
-
 
 interface port-channel3
 description 
@@ -156,10 +158,22 @@ no shutdown
 interface Ethernet1/1
 description 
 mtu 9216
+medium p2p
+ip unnumbered loopback0
+ip ospf network point-to-point
+ip router ospf UNDERLAY-NET area 0.0.0.0 
+
+ip pim sparse-mode
 no shutdown
 interface Ethernet1/2
 description 
 mtu 9216
+medium p2p
+ip unnumbered loopback0
+ip ospf network point-to-point
+ip router ospf UNDERLAY-NET area 0.0.0.0 
+
+ip pim sparse-mode
 no shutdown
 interface Ethernet1/3
 description 
@@ -189,11 +203,13 @@ description vPC Peer-Link
 switchport mode trunk
 switchport trunk allowed vlan 60-61,100,444,555
 no shutdown
+channel-group 999 mode active
 interface Ethernet1/10
 description vPC Peer-Link
 switchport mode trunk
 switchport trunk allowed vlan 60-61,100,444,555
 no shutdown
+channel-group 999 mode active
 
  
 
@@ -219,16 +235,6 @@ vrf member VXLANS
 ip address 10.69.69.254/32
 ip pim sparse-mode
 
-no password strength-check
-ip domain-lookup
-system qos
-  service-policy type network-qos jumboframes
-
-!
-!
-!
-!
-
 router ospf UNDERLAY-NET
 router-id 10.255.1.2
 log-adjacency-changes
@@ -248,5 +254,6 @@ evpn
     rd auto
     route-target import auto
     route-target export auto
+
 !
 end

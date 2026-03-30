@@ -26,9 +26,9 @@ limit-resource m6route-mem minimum 8 maximum 8
 
 {# {% include './nxos/banner.j2' %} #}
 
-{% include './nxos/features.j2' %}
-
 nv overlay evpn
+
+{% include './nxos/features.j2' %}
 
 cli alias name wr copy run start
 no password strength-check
@@ -62,16 +62,6 @@ ip pim anycast-rp 10.255.0.123 10.255.0.2
 {% endif %}
 
 {% include './nxos/interfaces.j2' %}
-
-no password strength-check
-ip domain-lookup
-system qos
-  service-policy type network-qos jumboframes
-
-!
-!
-!
-!
 
 {% include './nxos/ospf.j2' %}
 

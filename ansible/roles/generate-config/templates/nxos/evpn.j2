@@ -1,5 +1,7 @@
+{% if "tor" in device_roles %}
 evpn
   vni 10100 l2
     rd auto
     route-target import auto
     route-target export auto
+{% endif %}

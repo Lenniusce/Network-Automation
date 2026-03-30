@@ -20,20 +20,13 @@ limit-resource m6route-mem minimum 8 maximum 8
 
 username admin password 0 admin role network-admin
 
-feature scp-server
-feature ngmvpn
+nv overlay evpn
+
 feature ospf
 feature bgp
 feature pim
-feature fabric forwarding
-feature interface-vlan
-feature vn-segment-vlan-based
-feature nv overlay
-feature vpc
-feature lacp
-feature bfd
-!
-nv overlay evpn
+
+
 
 cli alias name wr copy run start
 no password strength-check
@@ -51,20 +44,6 @@ ip pim anycast-rp 10.255.0.123 10.255.0.2
 vrf context management
 
 
-
-
-interface nve1
-  no shutdown
-  description VTEP NVE
-  host-reachability protocol bgp
-  source-interface loopback1
-  member vni 10060
-    suppress-arp
-    mcast-group 239.1.1.100
-  member vni 10100
-    mcast-group 239.1.1.100
-  member vni 10555 associate-vrf
-    mcast-group 239.10.1.1
 
 
 
@@ -101,10 +80,10 @@ interface Ethernet1/8
 description 
 no shutdown
 interface Ethernet1/9
-description vPC Peer-Link
+description 
 no shutdown
 interface Ethernet1/10
-description vPC Peer-Link
+description 
 no shutdown
 
  
@@ -126,16 +105,6 @@ ip address 10.255.0.123/32
 ip router ospf UNDERLAY-NET area 0.0.0.0
 ip pim sparse-mode
 
-no password strength-check
-ip domain-lookup
-system qos
-  service-policy type network-qos jumboframes
-
-!
-!
-!
-!
-
 router ospf UNDERLAY-NET
 router-id 10.255.0.2
 log-adjacency-changes
@@ -151,10 +120,6 @@ send-community
 send-community extended
 route-reflector-client
 
-evpn
-  vni 10100 l2
-    rd auto
-    route-target import auto
-    route-target export auto
+
 !
 end

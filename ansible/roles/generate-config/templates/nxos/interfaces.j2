@@ -23,7 +23,7 @@ fabric forwarding mode anycast-gateway
 {% endfor %}
 
 {# For NVE interface #}
-
+{% if "tor" in device_roles %}
 interface nve1
   no shutdown
   description VTEP NVE
@@ -36,7 +36,7 @@ interface nve1
     mcast-group 239.1.1.100
   member vni 10555 associate-vrf
     mcast-group 239.10.1.1
-
+{% endif %}
 {# For port-channel interfaces #}
 
 {% for intf in interfaces if "port-channel" in intf.name | lower %}
