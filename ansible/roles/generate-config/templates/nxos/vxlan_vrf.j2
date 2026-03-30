@@ -1,0 +1,9 @@
+vrf context VXLANS
+  description VRF_VXLANS
+  vni 10555
+ip pim rp-address 10.69.69.254 group-list 224.0.0.0/4
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+    route-target both auto mvpn

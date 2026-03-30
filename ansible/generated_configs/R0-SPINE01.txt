@@ -20,8 +20,6 @@ limit-resource m6route-mem minimum 8 maximum 8
 
 username admin password 0 admin role network-admin
 
-nv overlay evpn
-
 feature scp-server
 feature ngmvpn
 feature ospf
@@ -35,11 +33,14 @@ feature vpc
 feature lacp
 feature bfd
 !
+nv overlay evpn
+
 cli alias name wr copy run start
 no password strength-check
 ip domain-lookup
 system qos
   service-policy type network-qos jumboframes
+
 
 ip pim rp-address 10.255.0.123 group-list 239.0.0.0/8
 ip pim ssm range 232.0.0.0/8
@@ -48,6 +49,7 @@ ip pim anycast-rp 10.255.0.123 10.255.0.2
 
 
 vrf context management
+
 
 
 

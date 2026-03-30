@@ -24,8 +24,6 @@ limit-resource m6route-mem minimum 8 maximum 8
 
 username admin password 0 admin role network-admin
 
-nv overlay evpn
-
 feature scp-server
 feature ngmvpn
 feature ospf
@@ -39,16 +37,18 @@ feature vpc
 feature lacp
 feature bfd
 !
+nv overlay evpn
+
 cli alias name wr copy run start
 no password strength-check
 ip domain-lookup
 system qos
   service-policy type network-qos jumboframes
 
+fabric forwarding anycast-gateway-mac 0000.1111.1111
+
 ip pim rp-address 10.255.0.123 group-list 239.0.0.0/8
 ip pim ssm range 232.0.0.0/8
-ip pim anycast-rp 10.255.0.123 10.255.0.1
-ip pim anycast-rp 10.255.0.123 10.255.0.2
 
 vlan 1,100,555
 vlan 60
@@ -64,43 +64,68 @@ vlan 555
   vn-segment 10555
 
 
+route-map DIRECT-PERMIT-ALL permit 10
+  description route-map for bgp
+
+
+vrf context VXLANS
+  description VRF_VXLANS
+  vni 10555
+ip pim rp-address 10.69.69.254 group-list 224.0.0.0/4
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+    route-target both auto mvpn
+
+
 vrf context management
+vpc domain 1
+  peer-switch
+  role priority 10
+  peer-keepalive destination 172.30.0.22 source 172.30.0.21
+  delay restore 90
+  peer-gateway
+  delay restore interface-vlan 30
+  ipv6 nd synchronize
+  ip arp synchronize
+
+
 
 interface Vlan60
 description Anycast Gateway For Admin Workstations
 no shutdown
 mtu 9216
-vrf member VXLANS
 no ip redirects
 ip address 192.168.60.254/24
 no ipv6 redirects
+ip pim sparse-mode
 fabric forwarding mode anycast-gateway
 interface Vlan100
 description Anycast Gateway For Public
 no shutdown
 mtu 9216
-vrf member VXLANS
+vrf member ISP
 no ip redirects
 ip address 69.25.124.1/24
 no ipv6 redirects
+ip pim sparse-mode
 fabric forwarding mode anycast-gateway
 interface Vlan444
 description ** Underlay Backup over vPC Peer-Link **
 no shutdown
 mtu 9216
-vrf member VXLANS
 no ip redirects
 ip address 192.168.0.1/30
 no ipv6 redirects
-fabric forwarding mode anycast-gateway
+ip pim sparse-mode
 interface Vlan555
 description L3VNI-For-IRB
 no shutdown
 mtu 9216
-vrf member VXLANS
 no ip redirects
 no ipv6 redirects
-fabric forwarding mode anycast-gateway
+ip pim sparse-mode
 
 
 interface nve1
@@ -118,8 +143,12 @@ interface nve1
 
 
 interface port-channel3
+description 
 no shutdown
 interface port-channel999
+description 
+switchport mode trunk
+switchport trunk allowed vlan 60-61,100,444,555
 no shutdown
 
  
@@ -134,6 +163,7 @@ mtu 9216
 no shutdown
 interface Ethernet1/3
 description 
+vrf member ISP
 mtu 9216
 no shutdown
 interface Ethernet1/4
@@ -156,9 +186,13 @@ description
 no shutdown
 interface Ethernet1/9
 description vPC Peer-Link
+switchport mode trunk
+switchport trunk allowed vlan 60-61,100,444,555
 no shutdown
 interface Ethernet1/10
 description vPC Peer-Link
+switchport mode trunk
+switchport trunk allowed vlan 60-61,100,444,555
 no shutdown
 
  

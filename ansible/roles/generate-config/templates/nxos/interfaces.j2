@@ -5,13 +5,21 @@ interface {{ intf.name }}
 description {{ intf.description }}
 no shutdown
 mtu 9216
+{% if "vrf_isp" in intf.tags %}
+vrf member ISP
+{% endif %}
+{% if "vrf_vxlans" in intf.tags %}
 vrf member VXLANS
+{% endif %}
 no ip redirects
 {% for ip in intf.ip_addresses %}
 ip address {{ ip.address }}
 {% endfor %}
 no ipv6 redirects
+ip pim sparse-mode
+{% if "fabric_forwarding" in intf.tags %}
 fabric forwarding mode anycast-gateway
+{% endif %}
 {% endfor %}
 
 {# For NVE interface #}
@@ -29,10 +37,15 @@ interface nve1
   member vni 10555 associate-vrf
     mcast-group 239.10.1.1
 
-{# For VLAN interfaces #}
+{# For port-channel interfaces #}
 
 {% for intf in interfaces if "port-channel" in intf.name | lower %}
 interface {{ intf.name }}
+description {{ intf.description }}
+{% if "trunk" in intf.tags %}
+switchport mode trunk
+switchport trunk allowed vlan 60-61,100,444,555
+{% endif %}
 no shutdown
 {% endfor %}
 
@@ -41,6 +54,16 @@ no shutdown
 {% for intf in interfaces if "Ethernet" in intf.name %}
 interface {{ intf.name }}
 description {{ intf.description }}
+{% if "trunk" in intf.tags %}
+switchport mode trunk
+switchport trunk allowed vlan 60-61,100,444,555
+{% endif %}
+{% if "vrf_isp" in intf.tags %}
+vrf member ISP
+{% endif %}
+{% if "vrf_vxlans" in intf.tags %}
+vrf member VXLANS
+{% endif %}
 {% if intf.mtu is defined and intf.mtu %}
 mtu {{ intf.mtu }}
 {% endif %}
@@ -49,6 +72,9 @@ mtu {{ intf.mtu }}
 ip pim sparse-mode
 {% endif %}
 no shutdown
+{% if "channel-group999" in intf.tags %}
+channel-group 999 mode active
+{% endif %}
 {% endfor %}
 
 {# For Mgmt #} 
