@@ -11,11 +11,19 @@ vrf member ISP
 {% if "vrf_vxlans" in intf.tags %}
 vrf member VXLANS
 {% endif %}
+{% if "555" in intf.name | lower in intf.name | lower %}
+ip forward
+ipv6 address use-link-local-only
+{% endif %}
 no ip redirects
 {% for ip in intf.ip_addresses %}
 ip address {{ ip.address }}
 {% endfor %}
 no ipv6 redirects
+{% if "444" in intf.name | lower in intf.name | lower %}
+ip ospf network point-to-point
+ip router ospf UNDERLAY-NET area 0.0.0.0
+{% endif %}
 ip pim sparse-mode
 {% if "fabric_forwarding" in intf.tags %}
 fabric forwarding mode anycast-gateway

@@ -66,6 +66,10 @@ vlan 555
   vn-segment 10555
 
 
+spanning-tree port type edge bpduguard default
+spanning-tree loopguard default
+spanning-tree vlan 60-61,100,555 priority 8192
+
 route-map DIRECT-PERMIT-ALL permit 10
   description route-map for bgp
 
@@ -121,12 +125,16 @@ mtu 9216
 no ip redirects
 ip address 192.168.2.2/30
 no ipv6 redirects
+ip ospf network point-to-point
+ip router ospf UNDERLAY-NET area 0.0.0.0
 ip pim sparse-mode
 interface vlan555
 description L3VNI-For-IRB
 no shutdown
 mtu 9216
 vrf member VXLANS
+ip forward
+ipv6 address use-link-local-only
 no ip redirects
 no ipv6 redirects
 ip pim sparse-mode
@@ -248,12 +256,27 @@ address-family ipv4 unicast
 address-family l2vpn evpn
 send-community
 send-community extended
+neighbor 10.255.0.1
+  inherit peer VXLAN_SPINE
+  description SPINE01
+neighbor 10.255.0.2
+  inherit peer VXLAN_SPINE
+  description SPINE02
+vrf VXLANS
+  log-neighbor-changes
+  address-family ipv4 unicast
+    network 0.0.0.0/0
+    redistribute direct route-map DIRECT-PERMIT-ALL
 
 evpn
-  vni 10100 l2
-    rd auto
-    route-target import auto
-    route-target export auto
+vni 10060 l2
+  rd auto
+  route-target import auto
+  route-target export auto
+vni 10100 l2
+  rd auto
+  route-target import auto
+  route-target export auto
 
 !
 end

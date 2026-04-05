@@ -155,6 +155,24 @@ address-family l2vpn evpn
 send-community
 send-community extended
 route-reflector-client
+neighbor 10.255.1.1
+  inherit peer VXLAN_LEAF
+  description R1-TOR01
+neighbor 10.255.1.2
+  inherit peer VXLAN_LEAF
+  description R1-TOR02
+neighbor 10.255.1.11
+  inherit peer VXLAN_LEAF
+  description R2-TOR01
+neighbor 10.255.1.12
+  inherit peer VXLAN_LEAF
+  description R2-TOR02
+neighbor 10.255.1.21
+  inherit peer VXLAN_LEAF
+  description R3-TOR01
+neighbor 10.255.1.22
+  inherit peer VXLAN_LEAF
+  description R3-TOR02
 
 
 !

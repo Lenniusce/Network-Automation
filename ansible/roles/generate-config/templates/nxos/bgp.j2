@@ -17,3 +17,16 @@ send-community extended
 {% if "spine" in device_roles %}
 route-reflector-client
 {% endif %}
+{% set bgp_data = local_context_data[0].bgp %}
+{% for nbr in bgp_data.bgp_neighbors %}
+neighbor {{ nbr.neighbor }}
+  inherit peer {{ nbr.inherit }}
+  description {{ nbr.description }}
+{% endfor %}
+{% if "tor" in device_roles %}
+vrf VXLANS
+  log-neighbor-changes
+  address-family ipv4 unicast
+    network 0.0.0.0/0
+    redistribute direct route-map DIRECT-PERMIT-ALL
+{% endif %}

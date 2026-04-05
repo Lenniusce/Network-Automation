@@ -1,7 +1,10 @@
 {% if "tor" in device_roles %}
+{% set evpn_data = local_context_data[0].evpn %}
 evpn
-  vni 10100 l2
-    rd auto
-    route-target import auto
-    route-target export auto
+{% for evpn_n in evpn_data.vni %}
+vni {{ evpn_n.id }} l2
+  rd auto
+  route-target import auto
+  route-target export auto
+{% endfor %}
 {% endif %}

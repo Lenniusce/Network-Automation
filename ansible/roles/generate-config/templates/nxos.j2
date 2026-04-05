@@ -50,6 +50,10 @@ ip pim anycast-rp 10.255.0.123 10.255.0.2
 {% if "tor" in device_roles %}
 {% include './nxos/vlan.j2' %}{{ '\n' }}
 
+spanning-tree port type edge bpduguard default
+spanning-tree loopguard default
+spanning-tree vlan 60-61,100,555 priority 8192
+
 {% include './nxos/routemap.j2' %}{{ '\n' }}
 
 {% include './nxos/vxlan_vrf.j2' %}{{ '\n' }}
