@@ -1,6 +1,13 @@
 Get Environment Started
 
 1) Start Netbox VM
+
+source /opt/netbox/venv/bin/activate
+
+cd /opt/netnox/netbox
+
+python3 manage.py runserver 0.0.0.0:8000 --insecure
+
 2) Start Ansible VM
 3) SSH to Ansible VM from VSCode Remote SSH
 4) pyenv to python 3.12.3
