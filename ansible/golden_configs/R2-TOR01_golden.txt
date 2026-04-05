@@ -1,4 +1,5 @@
 hostname R2-TOR01
+boot nxos bootflash:nxos.9.3.8.bin
 hardware access-list tcam region racl 512
 hardware access-list tcam region rp-ipv6-qos 0
 hardware access-list tcam region arp-ether 256 double-wide
