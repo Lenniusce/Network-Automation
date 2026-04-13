@@ -9,7 +9,7 @@ policy-map type network-qos jumboframes
   class type network-qos class-default
     mtu 9216
 !
-vdc  R0-SPINE01 id 1
+vdc SPINE01 id 1
 
 !
 limit-resource vlan minimum 16 maximum 4094
@@ -20,13 +20,13 @@ limit-resource m6route-mem minimum 8 maximum 8
 
 username admin password 0 admin role network-admin
 
-nv overlay evpn
-
 feature ospf
 feature bgp
 feature pim
 
 
+
+nv overlay evpn
 
 cli alias name wr copy run start
 no password strength-check
@@ -51,6 +51,7 @@ vrf context management
 
 interface Ethernet1/1
 description R1-TOR01
+no switchport
 mtu 9216
 medium p2p
 ip unnumbered loopback0
@@ -61,6 +62,7 @@ ip pim sparse-mode
 no shutdown
 interface Ethernet1/2
 description R1-TOR02
+no switchport
 mtu 9216
 medium p2p
 ip unnumbered loopback0
@@ -71,6 +73,7 @@ ip pim sparse-mode
 no shutdown
 interface Ethernet1/3
 description R2-TOR01
+no switchport
 mtu 9216
 medium p2p
 ip unnumbered loopback0
@@ -81,6 +84,7 @@ ip pim sparse-mode
 no shutdown
 interface Ethernet1/4
 description R2-TOR02
+no switchport
 mtu 9216
 medium p2p
 ip unnumbered loopback0
@@ -91,6 +95,7 @@ ip pim sparse-mode
 no shutdown
 interface Ethernet1/5
 description R3-TOR01
+no switchport
 mtu 9216
 medium p2p
 ip unnumbered loopback0
@@ -101,6 +106,7 @@ ip pim sparse-mode
 no shutdown
 interface Ethernet1/6
 description R3-TOR02
+no switchport
 mtu 9216
 medium p2p
 ip unnumbered loopback0
@@ -116,10 +122,8 @@ interface Ethernet1/8
 description Shutdown: Unused
 no shutdown
 interface Ethernet1/9
-description 
 no shutdown
 interface Ethernet1/10
-description 
 no shutdown
 
  

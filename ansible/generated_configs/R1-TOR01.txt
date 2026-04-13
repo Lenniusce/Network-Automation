@@ -13,7 +13,7 @@ policy-map type network-qos jumboframes
   class type network-qos class-default
     mtu 9216
 !
-vdc  R1-TOR01 id 1
+vdc TOR01 id 1
 
 !
 limit-resource vlan minimum 16 maximum 4094
@@ -23,8 +23,6 @@ limit-resource m4route-mem minimum 58 maximum 58
 limit-resource m6route-mem minimum 8 maximum 8
 
 username admin password 0 admin role network-admin
-
-nv overlay evpn
 
 
 
@@ -40,6 +38,8 @@ feature nv overlay
 feature vpc
 feature lacp
 feature bfd
+
+nv overlay evpn
 
 cli alias name wr copy run start
 no password strength-check
@@ -153,18 +153,24 @@ interface nve1
     mcast-group 239.10.1.1
 
 interface port-channel3
-description 
+switchport access vlan 60
+speed 1000
+vpc 3
 no shutdown
+
 interface port-channel999
-description 
+description vPC Peer-Link
 switchport mode trunk
 switchport trunk allowed vlan 60-61,100,444,555
+spanning-tree port type network
+vpc peer-link
 no shutdown
+
 
  
 
 interface Ethernet1/1
-description 
+description SPINE01
 mtu 9216
 medium p2p
 ip unnumbered loopback0
@@ -174,7 +180,7 @@ ip router ospf UNDERLAY-NET area 0.0.0.0
 ip pim sparse-mode
 no shutdown
 interface Ethernet1/2
-description 
+description SPINE02
 mtu 9216
 medium p2p
 ip unnumbered loopback0
@@ -184,28 +190,15 @@ ip router ospf UNDERLAY-NET area 0.0.0.0
 ip pim sparse-mode
 no shutdown
 interface Ethernet1/3
-description 
+no switchport
 vrf member ISP
 mtu 9216
 no shutdown
 interface Ethernet1/4
-description 
-mtu 9216
-no shutdown
 interface Ethernet1/5
-description 
-mtu 9216
-no shutdown
 interface Ethernet1/6
-description 
-mtu 9216
-no shutdown
 interface Ethernet1/7
-description 
-no shutdown
 interface Ethernet1/8
-description 
-no shutdown
 interface Ethernet1/9
 description vPC Peer-Link
 switchport mode trunk

@@ -1,1 +1,1 @@
-vdc  {{ inventory_hostname_short }} id 1
+vdc {{ inventory_hostname_short.split('-', 1)[1] }} id 1

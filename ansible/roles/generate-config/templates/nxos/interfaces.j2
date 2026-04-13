@@ -49,19 +49,36 @@ interface nve1
 
 {% for intf in interfaces if "port-channel" in intf.name | lower %}
 interface {{ intf.name }}
+{% if "vpc3" in intf.tags %}
+switchport access vlan 60
+speed 1000
+vpc 3
+{% endif %}
+{% if intf.description %}
 description {{ intf.description }}
+{% endif %}
 {% if "trunk" in intf.tags %}
 switchport mode trunk
 switchport trunk allowed vlan 60-61,100,444,555
 {% endif %}
+{% if "vpc_peerlink" in intf.tags %}
+spanning-tree port type network
+vpc peer-link
+{% endif %}
 no shutdown
+
 {% endfor %}
 
 {# For Ethernet interfaces #} 
 
 {% for intf in interfaces if "Ethernet" in intf.name %}
 interface {{ intf.name }}
+{% if intf.description %}
 description {{ intf.description }}
+{% endif %}
+{% if "no_switchport" in intf.tags %}
+no switchport
+{% endif %}
 {% if "trunk" in intf.tags %}
 switchport mode trunk
 switchport trunk allowed vlan 60-61,100,444,555
@@ -79,7 +96,9 @@ mtu {{ intf.mtu }}
 {% include "./nxos/ip_unnumbered.j2" %} {{ '\n' }}
 ip pim sparse-mode
 {% endif %}
+{% if intf.enabled %}
 no shutdown
+{% endif %}
 {% if "channel-group999" in intf.tags %}
 channel-group 999 mode active
 {% endif %}
