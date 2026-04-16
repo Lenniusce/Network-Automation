@@ -3,7 +3,7 @@
 - name: Take out Trash
   file:
 # dest using a special variable https://docs.ansible.com/projects/ansible/latest/reference_appendices/special_variables.html
-    path: '$PWD/../../generated_configs/{{ inventory_hostname }}.txt'
+    path: '$PWD/../generated_configs/{{ inventory_hostname }}.txt'
     state: absent
   delegate_to: localhost
 
@@ -12,6 +12,6 @@
   ansible.builtin.template:
     src: 'nxos.j2'
 # dest using a special variable https://docs.ansible.com/projects/ansible/latest/reference_appendices/special_variables.html
-    dest: '$PWD/../../generated_configs/{{ inventory_hostname }}.txt'
+    dest: '$PWD/../generated_configs/{{ inventory_hostname }}.txt'
     lstrip_blocks:  yes
   delegate_to: localhost

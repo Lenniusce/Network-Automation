@@ -1,0 +1,15 @@
+---
+
+- name: Generate Configs
+  import_playbook: "generate-configs.yml"
+
+- name: Configure Devices
+  hosts: device_roles_spine, device_roles_spine
+  gather_facts: false
+
+  tasks:
+    - name: Push Configs 
+      cisco.nxos.nxos_config:
+        replace_src: "{{ inventory_hostname }}.cfg"
+        replace: config
+      when: ansible_network_os == "nxos"

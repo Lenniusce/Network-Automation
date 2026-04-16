@@ -1,7 +1,7 @@
 ---
 
 - name: Generate Configs
-  hosts: all
+  hosts: device_roles_spine, device_roles_tor
   gather_facts: false
   tasks:
   
