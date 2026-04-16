@@ -4,7 +4,9 @@
 interface {{ intf.name }}
 description {{ intf.description }}
 no shutdown
-mtu 9216
+{% if intf.mtu %}
+mtu {{ intf.mtu }}
+{% endif %}
 {% if "vrf_isp" in intf.tags %}
 vrf member ISP
 {% endif %}

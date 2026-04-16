@@ -101,7 +101,6 @@ vpc domain 1
 interface vlan60
 description Anycast Gateway For Admin Workstations
 no shutdown
-mtu 9216
 vrf member VXLANS
 no ip redirects
 ip address 192.168.60.254/24
@@ -111,7 +110,6 @@ fabric forwarding mode anycast-gateway
 interface vlan100
 description Anycast Gateway For Public
 no shutdown
-mtu 9216
 vrf member ISP
 no ip redirects
 ip address 69.25.124.1/24
@@ -121,7 +119,6 @@ fabric forwarding mode anycast-gateway
 interface vlan444
 description ** Underlay Backup over vPC Peer-Link **
 no shutdown
-mtu 9216
 no ip redirects
 ip address 192.168.1.1/30
 no ipv6 redirects
@@ -131,7 +128,6 @@ ip pim sparse-mode
 interface vlan555
 description L3VNI-For-IRB
 no shutdown
-mtu 9216
 vrf member VXLANS
 ip forward
 ipv6 address use-link-local-only
