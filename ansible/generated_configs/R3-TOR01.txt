@@ -212,7 +212,7 @@ channel-group 999 mode active
 
 interface mgmt0
 vrf member management
-ip address 172.30.0.41/24
+ip address 10.43.0.7/24
 
  
 

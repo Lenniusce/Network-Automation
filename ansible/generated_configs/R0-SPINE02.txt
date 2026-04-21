@@ -128,7 +128,7 @@ no shutdown
 
 interface mgmt0
 vrf member management
-ip address 172.30.0.2/24
+ip address 10.43.0.2/24
 
  
 
